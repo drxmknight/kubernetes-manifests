@@ -1,0 +1,52 @@
+apiVersion: apps/v1 # notar que cambia la version
+kind: StatefulSet 
+metadata: # Nombre del statefulset
+  name: httpd-statefulset
+spec: 
+  selector:
+    matchLabels:
+      app: httpd-label # Define como el statefulset identifica los pods que debe gestionar. En este caso, los identifica con la etiqueta http-label
+  replicas: 1 # Cantidad de pods dentro del deployment
+  serviceName: httpd-service # Define el nombre del servicio. Se puede resolver por DNS.
+  template: # Se definen los templates para la creacion de los pods.
+    metadata: 
+      labels:
+        app: httpd-label # Los pods son etiquetados con el label httpd-label
+    spec: # Template para los pods. Es el mismo del archivo 02-advanced-pod.yaml
+      containers:
+      - name: httpd # nombre del contenedor
+        image: httpd:alpine # imagen del contenedor
+        resources: # Se definen los recursos que utilizara el contenedor (no por pod)
+          requests: # recursos que se garantizan al container 
+            memory: "64Mi" # Se garantiza 64 Mebibytes
+            cpu: "200m" # Se garantizan 200 milicores, o 0.2 cpu.
+          limits: # establecen los limites del contenedor. Si superan los limites, el contenedor es destruido por el kernel.
+            memory: "128Mi" # No puede pasar los 128 Mebibytes
+            cpu: "500m" # No puede sobrepasar los 500 milicores
+        readinessProbe: # forma para determinar que el pod esta listo para recibir trafico. Si no se define, el pod siempre marca READY 1/1. Sirve para ocaciones en que el pod esta saludable, pero aun no puede recibir trafico debido a carga de configuraciones.
+          httpGet: # Se sondea mediante un httpget al puerto 80 del pod.
+            path: /
+            port: 80
+          initialDelaySeconds: 5 # Se debe esperar 5 segundos antes del primer sondeo.
+          periodSeconds: 10 # Se valida el readiness cada 10 segundos.
+        livenessProbe: # forma para determinar si el container es saludable. Si el livenessprobe retorna otro valor aparte de 0, kubelet mata el contenedor y lo reinicia
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 15 # kubernetes espera 15 segundos antes del primer sondeo.
+          periodSeconds: 20 # Se valida el readiness cada 20 segundos.
+        ports: # Puerto para exponer en el pod.
+        - containerPort: 80
+        volumeMounts: # Se agrega la opcion para montar volumenes en los pods
+        - mountPath: "/data" # Se monta un volumen en el path descrito
+          name: httpd-pvc # nombre del volumen
+  volumeClaimTemplates: # Define un template para un persistent volume
+  - metadata:
+      name: httpd-pvc # Nombre del PV
+    spec:
+      accessModes:
+      - ReadWriteOnce # Para poder escribir
+      resources:
+        requests:
+          storage: 128Mi # Tamaño del volumen
+      storageClassName: local-path # debe deja como string vacio, de lo contrario, se utiliza un StorageClass por defecto.
+

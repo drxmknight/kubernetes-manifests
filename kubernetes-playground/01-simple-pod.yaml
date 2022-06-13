@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod # define el tipo de recurso. En este caso, solo un pod.
+metadata:
+  name: test-ubuntu-pod
+spec:
+  containers:
+    - name: unbuntu # nombre del container corriendo dentro del pod
+      image: ubuntu # imagen del container
+      args: # argumento que se pasan para correr el contenedor
+      - sleep
+      - infinity

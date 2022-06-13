@@ -1,0 +1,44 @@
+apiVersion: apps/v1 # notar que cambia la version
+kind: Deployment 
+metadata: # Nombre del deployment
+  name: httpd-deployment
+spec: 
+  selector:
+    matchLabels:
+      app: httpd-label # Define como el deployment identifica los pods que debe gestionar. En este caso, los identifica con la etiqueta http-label
+  replicas: 2 # Cantidad de pods dentro del deployment
+  template: # Se definen los templates para la creacion de los pods.
+    metadata: 
+      labels:
+        app: httpd-label # Los pods son etiquetados con el label httpd-label
+    spec: # Template para los pods. Es el mismo del archivo 02-advanced-pod.yaml
+      containers:
+      - name: httpd # nombre del contenedor
+        image: httpd:alpine # imagen del contenedor
+        env: # se declaran variables de entorno
+        - name: TEST_ENV
+          value: "variable de prueba"
+        - name: IP_FROM_HOST
+          valueFrom: # expone informacion del pod hacia el contenedor mediante variables de entorno.
+            fieldRef:
+              fieldPath: status.hostIP # Expone IP del pod
+        resources: # Se definen los recursos que utilizara el contenedor (no por pod)
+          requests: # recursos que se garantizan al container 
+            memory: "64Mi" # Se garantiza 64 Mebibytes
+            cpu: "200m" # Se garantizan 200 milicores, o 0.2 cpu.
+          limits: # establecen los limites del contenedor. Si superan los limites, el contenedor es destruido por el kernel.
+            memory: "128Mi" # No puede pasar los 128 Mebibytes
+            cpu: "500m" # No puede sobrepasar los 500 milicores
+        readinessProbe: # forma para determinar que el pod esta listo para recibir trafico. Si no se define, el pod siempre marca READY 1/1. Sirve para ocaciones en que el pod esta saludable, pero aun no puede recibir trafico debido a carga de configuraciones.w
+          httpGet: # Se sondea mediante un httpget al puerto 80 del pod.
+            path: /
+            port: 80
+          initialDelaySeconds: 5 # Se debe esperar 5 segundos antes del primer sondeo.
+          periodSeconds: 10 # Se valida el readiness cada 10 segundos.
+        livenessProbe: # forma para determinar si el container es saludable. Si el livenessprobe retorna otro valor aparte de 0, kubelet mata el contenedor y lo reinicia
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 15 # kubernetes espera 15 segundos antes del primer sondeo.
+          periodSeconds: 20 # Se valida el readiness cada 20 segundos.
+        ports: # Puerto para exponer en el pod.
+        - containerPort: 80

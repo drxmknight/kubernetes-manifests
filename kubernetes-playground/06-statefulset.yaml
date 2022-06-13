@@ -1,0 +1,44 @@
+apiVersion: apps/v1 # notar que cambia la version
+kind: StatefulSet 
+metadata: # Nombre del statefulset
+  name: httpd-statefulset
+spec: 
+  selector:
+    matchLabels:
+      app: httpd-label # Define como el statefulset identifica los pods que debe gestionar. En este caso, los identifica con la etiqueta http-label
+  replicas: 1 # Cantidad de pods dentro del deployment
+  serviceName: httpd-service # Define el nombre del servicio. Se puede resolver por DNS.
+  template: # Se definen los templates para la creacion de los pods.
+    metadata: 
+      labels:
+        app: httpd-label # Los pods son etiquetados con el label httpd-label
+    spec: # Template para los pods. Es el mismo del archivo 02-advanced-pod.yaml
+      containers:
+      - name: httpd # nombre del contenedor
+        image: httpd:alpine # imagen del contenedor
+        resources: # Se definen los recursos que utilizara el contenedor (no por pod)
+          requests: # recursos que se garantizan al container 
+            memory: 64Mi # Se garantiza 64 Mebibytes
+            cpu: 200m # Se garantizan 200 milicores, o 0.2 cpu.
+          limits: # establecen los limites del contenedor. Si superan los limites, el contenedor es destruido por el kernel.
+            memory: "128Mi" # No puede pasar los 128 Mebibytes
+            cpu: 500m # No puede sobrepasar los 500 milicores
+        ports: # Puerto para exponer en el pod.
+        - containerPort: 80
+        volumeMounts: # Se agrega la opcion para montar volumenes en los pods
+        - name: httpd-pvc # nombre del volumen
+          mountPath: /data # Se monta un volumen en el path descrito
+      #volumes:
+      #- name: httpd-pvc
+      #  persistentVolumeClaim: httpd-pvc
+      #    claimName: httpd-pvc
+  volumeClaimTemplates: # Define un template para un persistent volume
+  - metadata:
+      name: httpd-pvc # Nombre del PV
+    spec:
+      accessModes:
+      - ReadWriteOnce # Para poder escribir
+      resources:
+        requests:
+          storage: 128Mi # Tamaño del volumen
+      storageClassName: local-path # Se debe asignar un storageclassname que el PVC use para poder crear un PV.
