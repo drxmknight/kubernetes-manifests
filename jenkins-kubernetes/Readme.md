@@ -19,7 +19,7 @@ Get the service info:
 kubectl -n jenkins get svc jenkins-service
 ```
 
-To access the server, you can:
+To access the webapp, you can:
 - Access from a node in: **CLUSTER-IP:PORT**
 - Access direct to the node: **WORKER_IP:NodePort**
 
@@ -29,3 +29,9 @@ kubectl -n jenkins logs JENKINS_POD | grep -i password -A5
 ```
 
 Copy the password and insert it in the webapp.
+
+
+## Links
+
+- Jenkins official guide: https://www.jenkins.io/doc/book/installing/kubernetes/
+- Jenkins manifest files: https://devopscube.com/setup-jenkins-on-kubernetes-cluster/
