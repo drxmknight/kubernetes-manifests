@@ -31,7 +31,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - "k8s-wrk-01"
+          - ${JENKINS_NODE}
 
 ---
 apiVersion: v1
