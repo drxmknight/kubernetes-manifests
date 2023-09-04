@@ -11,12 +11,12 @@ export JENKINS_NODE="NODE_NAME"
 
 Apply the manifests files:
 ```bash
-kubectl apply -f jenkins-kubernetes
+kubectl apply -f .
 ```
 
 Get the service info:
 ```bash
-kubectl -n jenkins get svc jenkins-service
+kubectl -n jenkins get svc jenkins
 ```
 
 To access the webapp, you can:
