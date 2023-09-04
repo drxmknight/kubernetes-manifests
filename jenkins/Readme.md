@@ -2,12 +2,18 @@
 
 Manifest files to deploy a jenkins server in kubernetes
 
-## Deploy
 
-Create a .env file in the folder with the name of the worker node where you want to deploy the server:
+## Prerequisites
+
+If you are **not using Longhorn CSI**, then deploy the volumes as local volumes. The nodeAffinity must be configured:
+
+To to it, configure the env var with the name of the node.
 ```
-export JENKINS_NODE="NODE_NAME"
+JENKINS_NODE="NODE_NAME"
 ```
+
+
+## Deploy
 
 Apply the manifests files:
 ```bash
@@ -25,10 +31,10 @@ To access the webapp, you can:
 
 To setup jenkins, see the logs from the pod:
 ```bash
-kubectl -n jenkins logs JENKINS_POD | grep -i password -A5
+kubectl -n jenkins logs JENKINS_POD_NAME | grep -i password -A5
 ```
 
-Copy the password and insert it in the webapp.
+Copy the password and insert it in the web UI.
 
 
 ## Links
