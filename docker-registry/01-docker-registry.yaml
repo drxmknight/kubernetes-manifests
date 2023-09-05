@@ -1,0 +1,82 @@
+---
+apiVersion: v1
+kind: Namespace 
+metadata:
+  name: docker-registry
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: docker-registry-pvc
+  namespace: docker-registry
+spec:
+  storageClassName: longhorn
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: docker-registry
+  name: docker-registry
+  namespace: docker-registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docker-registry
+  template:
+    metadata:
+      labels:
+        app: docker-registry
+    spec:
+      containers:
+      - name: docker-registry
+        image: registry:latest
+        ports:
+        - name: registry
+          containerPort: 443
+        env:
+        - name: REGISTRY_HTTP_ADDR
+          value: 0.0.0.0:443
+        - name: REGISTRY_HTTP_TLS_CERTIFICATE
+          value: /certs/tls.crt
+        - name: REGISTRY_HTTP_TLS_KEY
+          value: /certs/tls.key
+        volumeMounts:
+        - name: registry-certs
+          mountPath: /certs
+          readOnly: true
+        - name: registry-data
+          mountPath: /var/lib/registry
+      volumes:
+      - name: registry-certs
+        secret:
+          secretName: registry-cert
+      - name: registry-data
+        persistentVolumeClaim:
+          claimName: docker-registry-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-registry
+  namespace: docker-registry
+spec:
+  ports:
+  - name: docker-registry
+    port: 443
+    protocol: TCP
+    targetPort: 443
+  selector:
+    app: docker-registry
+  type: NodePort
+  clusterIP: 10.100.0.200
