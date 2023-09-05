@@ -12,7 +12,6 @@ To to it, configure the env var with the name of the node.
 JENKINS_NODE="NODE_NAME"
 ```
 
-
 ## Deploy
 
 Apply the manifests files:
