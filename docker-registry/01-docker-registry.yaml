@@ -78,5 +78,4 @@ spec:
     targetPort: 443
   selector:
     app: docker-registry
-  type: NodePort
-  clusterIP: 10.100.0.200
+  type: ClusterIP
