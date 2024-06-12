@@ -21,6 +21,10 @@ spec:
         volumeMounts:
         - name: grafana-storage
           mountPath: /var/lib/grafana
+      hostAliases:
+      - ip: "10.3.0.91"
+        hostnames:
+        - "nodered.str.local"
       volumes:
       - name: grafana-storage
         persistentVolumeClaim:
