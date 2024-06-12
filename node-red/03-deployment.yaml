@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodered
+  namespace: nodered
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodered
+  template:
+    metadata:
+      labels:
+        app: nodered
+    spec:
+      securityContext:
+        runAsUser: 0
+      containers:
+        - name: nodered
+          image: nodered/node-red:latest
+          ports:
+            - containerPort: 1880
+          env:
+            - name: TZ
+              value: America/Santiago
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+          volumeMounts:
+            - name: nodered-data
+              mountPath: /data
+      volumes:
+        - name: nodered-data
+          persistentVolumeClaim:
+            claimName: nodered-pv-claim
