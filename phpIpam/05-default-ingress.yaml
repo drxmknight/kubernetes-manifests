@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: phpipam-web-ingress
+  namespace: phpipam
+spec:
+  ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: phpipam-web
+      port:
+        number: 80

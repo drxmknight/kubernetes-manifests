@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpipam-cron
+  namespace: phpipam
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpipam-cron
+  template:
+    metadata:
+      labels:
+        app: phpipam-cron
+    spec:
+      containers:
+        - name: phpipam-cron
+          image: phpipam/phpipam-cron:latest
+          env:
+            - name: TZ
+              value: "America/Santiago"
+            - name: IPAM_DATABASE_HOST
+              value: phpipam-mariadb
+            - name: IPAM_DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: phpipam-secrets
+                  key: IPAM_DATABASE_PASS
+            - name: SCAN_INTERVAL
+              value: "1h"
+          volumeMounts:
+            - name: phpipam-ca
+              mountPath: /usr/local/share/ca-certificates
+              readOnly: true
+      volumes:
+        - name: phpipam-ca
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpipam-cron
+  namespace: phpipam
+spec:
+  selector:
+    app: phpipam-cron
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
