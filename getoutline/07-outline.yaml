@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outline
+  namespace: getoutline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: outline
+  template:
+    metadata:
+      labels:
+        app: outline
+    spec:
+      securityContext:
+        fsGroup: 1001
+      containers:
+      - name: outline
+        image: docker.getoutline.com/outlinewiki/outline:latest
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - secretRef:
+            name: env-secret
+        volumeMounts:
+        - name: outline-data
+          mountPath: /var/lib/outline/data
+      volumes:
+      - name: outline-data
+        persistentVolumeClaim:
+          claimName: outline-data-pvc

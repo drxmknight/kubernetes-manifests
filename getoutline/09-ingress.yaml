@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: outline-ingress
+  namespace: getoutline
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-body-size: "100M"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: wiki.str.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: outline
+            port:
+              number: 3000
+  tls:
+  - hosts:
+    - wiki.str.local
+    secretName: str-local-cert

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: getoutline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis
+        ports:
+        - containerPort: 6379
+        envFrom:
+        - secretRef:
+            name: env-secret
+        volumeMounts:
+        - name: redis-config
+          mountPath: /redis.conf
+          subPath: redis.conf
+        command: ["redis-server", "/redis.conf"]
+        livenessProbe:
+          exec:
+            command: ["redis-cli", "ping"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: redis-config
+        configMap:
+          name: redis-config

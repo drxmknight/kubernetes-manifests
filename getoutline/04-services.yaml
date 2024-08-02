@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: outline
+  namespace: getoutline
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    app: outline
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: getoutline
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: getoutline
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: postgres
