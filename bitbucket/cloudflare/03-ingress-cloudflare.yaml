@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bitbucket-ingress-cloudflare
+  namespace: bitbucket
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-body-size: "250M"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: bitbucket.eramz.top
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: bitbucket
+            port:
+              number: 80
