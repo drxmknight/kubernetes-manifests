@@ -16,6 +16,15 @@ spec:
       containers:
       - name: redis
         image: redis
+        securityContext:
+          allowPrivilegeEscalation: false
+        resources:
+          requests:
+            memory: "16Mi"
+            cpu: "1m"
+          limits:
+            memory: "256Mi"
+            cpu: "10m"
         ports:
         - containerPort: 6379
         envFrom:
