@@ -3,3 +3,6 @@ certs
 *.crt
 *.cert
 .env
+
+# helm
+values.yaml
