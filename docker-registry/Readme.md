@@ -1,56 +1,37 @@
 # Docker Registry
 
-Deploy a private docker registry to upload images
+Deploy a private docker registry in Kubernetes to upload images
 
 
 ## Prerequisites
 
-Create certificates to secure communication. The name is in the format SERVICE_NAME.NAMESPACE:
+- Have a certificate and private key to secure communication. In this case, we are using cert-manager to generate the certificate.
+
+
+- Copy the certs to the node where you build the images. Must be in the docker folder to secure the connection to the registry:
 ```bash
-mkdir -p certs; 
-openssl req -x509 -days 3650 -newkey rsa:4096 -nodes -sha256 \
--keyout certs/docker-registry.key \
--out certs/docker-registry.cert \
--addext "subjectAltName = DNS:docker-registry.docker-registry"
+export BUILD_NODE=k8s-wrk-02
+ssh root@$BUILD_NODE 'mkdir -p /etc/docker/certs.d/registry.str.local'
+kubectl get secret str-local-cert -o jsonpath='{.data.tls\.crt}' | base64 -d | ssh root@$BUILD_NODE 'cat > /etc/docker/certs.d/registry.str.local/tls.crt'
 ```
 
-Create a secret in the cluster to store certs:
-```bash
-kubectl create ns docker-registry
-kubectl create secret tls registry-cert --namespace=docker-registry --cert=certs/docker-registry.cert --key=certs/docker-registry.key
-```
+## Install
 
 Apply the manifests:
 ```bash
 kubectl apply -f .
 ```
 
-
-Copy the certs to the node where you build the images. Must be in the docker folder to secure the connection to the registry:
-```bash
-export BUILD_NODE=NODENAME
-rsync -r certs/ root@$BUILD_NODE:/etc/docker/certs.d/docker-registry.docker-registry/
-```
-
-As a self signed certificate, also must be added to the trust anchors. In this case, for centos:
-```bash
-rsync -r certs/ root@$BUILD_NODE:/etc/pki/ca-trust/source/anchors/
-```
-
-Update ca trust and restart docker service:
-```bash
-ssh root@$BUILD_NODE 'update-ca-trust && systemctl restart docker'
-```
-
+## Upload Images
 To use, you must tag the images using the ip of the registry service:
 ```bash
-docker tag IMAGE:TAG docker-registry.docker-registry/IMAGE:TAG
-docker push docker-registry.docker-registry/IMAGE:TAG
+docker tag IMAGE:TAG registry.str.local/IMAGE:TAG
+docker push registry.str.local/IMAGE:TAG
 ```
 
 To validate the images:
 ```bash
-curl -k https://docker-registry.docker-registry/v2/_catalog
+curl -k https://registry.str.local/v2/_catalog
 ```
 
 ## Uninstall

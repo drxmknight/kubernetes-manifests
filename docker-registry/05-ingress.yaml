@@ -9,18 +9,18 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "500M"
 spec:
   ingressClassName: nginx
-  tls:
-  - hosts:
-    - docker-registry.docker-registry
-    secretName: registry-cert
   rules:
-  - host: docker-registry.docker-registry
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: docker-registry
-            port:
-              number: 443
+    - host: registry.str.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: docker-registry
+                port:
+                  number: 443
+  tls:
+    - hosts:
+        - registry.str.local
+      secretName: str-local-cert
