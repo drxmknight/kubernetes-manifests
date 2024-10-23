@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: benchmark
+  namespace: pg-benchmark
+  labels:
+    app: pg-benchmark
+spec:
+  restartPolicy: Never
+  initContainers:
+    - name: init
+      image: postgres
+      env:
+        - name: PGPASSWORD
+          value: password
+      command: ["/bin/bash", "-c"]
+      args:
+        - until pg_isready -h postgres-local -U admin -d pg-benchmark; 
+          do sleep 1; 
+          done;
+          pgbench -i -s 100 -h postgres-local -U admin -d pg-benchmark;
+          pgbench -i -s 100 -h postgres-longhorn -U admin -d pg-benchmark
+  containers:
+    - name: benchmark-local
+      image: postgres
+      env:
+        - name: PGPASSWORD
+          value: password
+      command: ["/bin/bash", "-c"]
+      args:
+        - pgbench -c 10 -j 1 -T 10 -h postgres-local -U admin -d pg-benchmark;
+    - name: benchmark-longhorn
+      image: postgres
+      env:
+        - name: PGPASSWORD
+          value: password
+      command: ["/bin/bash", "-c"]
+      args:
+        - pgbench -c 10 -j 1 -T 10 -h postgres-longhorn -U admin -d pg-benchmark;
