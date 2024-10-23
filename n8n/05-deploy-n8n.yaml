@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: n8n
+  name: n8n
+  namespace: n8n
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: n8n
+  template:
+    metadata:
+      labels:
+        service: n8n
+    spec:
+      initContainers:
+        - name: volume-permissions
+          image: busybox:1.36
+          command: ["sh", "-c", "chown 1000:1000 /data"]
+          volumeMounts:
+            - name: n8n-data
+              mountPath: /data
+      containers:
+        - name: terraform
+          image: hashicorp/terraform:1.9
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - sleep infinity
+          volumeMounts:
+            - name: n8n-data
+              mountPath: /home/node/.n8n
+        - name: n8n
+          image: n8nio/n8n:1.64.0
+          ports:
+            - containerPort: 5678
+          resources:
+            requests:
+              memory: "250Mi"
+            limits:
+              # High memory needed to handle large files
+              memory: "4Gi"
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - sleep 5; n8n start
+          env:
+            - name: DB_TYPE
+              value: postgresdb
+            - name: DB_POSTGRESDB_HOST
+              value: postgres-service
+            - name: DB_POSTGRESDB_PORT
+              value: "5432"
+            - name: DB_POSTGRESDB_DATABASE
+              value: n8n
+            - name: DB_POSTGRESDB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_NON_ROOT_USER
+            - name: DB_POSTGRESDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_NON_ROOT_PASSWORD
+            - name: N8N_PROTOCOL
+              value: http
+            - name: N8N_PORT
+              value: "5678"
+            - name: WEBHOOK_URL
+              value: https://n8n.str.local
+            # - name: N8N_PAYLOAD_SIZE_MAX
+            #   value: "1024"
+            # Needs to handle large files
+            - name: N8N_FORMDATA_FILE_SIZE_MAX
+              value: "1024"
+            - name: N8N_DEFAULT_BINARY_DATA_MODE
+              value: filesystem
+            - name: N8N_DIAGNOSTICS_ENABLED
+              value: "false"
+            - name: N8N_VERSION_NOTIFICATIONS_ENABLED
+              value: "false"
+            - name: N8N_TEMPLATES_ENABLED
+              value: "false"
+            - name: EXTERNAL_FRONTEND_HOOKS_URLS
+              value: ""
+            - name: N8N_DIAGNOSTICS_CONFIG_FRONTEND
+              value: ""
+            - name: N8N_DIAGNOSTICS_CONFIG_BACKEND
+              value: ""
+          volumeMounts:
+            - mountPath: /home/node/.n8n
+              name: n8n-data
+      volumes:
+        - name: n8n-data
+          persistentVolumeClaim:
+            claimName: n8n-pvc
