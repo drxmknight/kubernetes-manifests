@@ -23,18 +23,8 @@ spec:
             - name: n8n-data
               mountPath: /data
       containers:
-        - name: terraform
-          image: hashicorp/terraform:1.9
-          command:
-            - /bin/sh
-          args:
-            - -c
-            - sleep infinity
-          volumeMounts:
-            - name: n8n-data
-              mountPath: /home/node/.n8n
         - name: n8n
-          image: n8nio/n8n:1.64.0
+          image: n8nio/n8n:1.64.1
           ports:
             - containerPort: 5678
           resources:
