@@ -15,7 +15,11 @@ spec:
     spec:
       containers:
       - name: zabbix-server
-        image: zabbix/zabbix-server-pgsql:alpine-6.4-latest
+        image: zabbix/zabbix-server-pgsql:alpine-7.0.4
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
         env:
           - name: DB_SERVER_HOST
             value: zabbix-psql
@@ -31,6 +35,7 @@ spec:
                 key: POSTGRES_PASSWORD
           - name: ZBX_STARTVMWARECOLLECTORS
             value: "1"
+        
 
 ---
 apiVersion: v1

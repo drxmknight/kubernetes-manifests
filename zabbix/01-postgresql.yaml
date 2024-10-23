@@ -11,7 +11,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 10Gi
+      storage: 20Gi
 
 ---
 apiVersion: apps/v1
@@ -32,6 +32,11 @@ spec:
       containers:
         - name: zabbix-psql
           image: postgres:15.6
+          args:
+            - -c
+            - shared_buffers=256MB
+            - -c
+            - max_connections=200
           env:
           - name: PGDATA
             value: /var/lib/postgresql/data/pgdata
