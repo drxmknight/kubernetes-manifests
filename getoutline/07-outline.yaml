@@ -17,7 +17,7 @@ spec:
         fsGroup: 1001
       containers:
       - name: outline
-        image: outlinewiki/outline:0.78.0
+        image: outlinewiki/outline:0.80.2
         securityContext:
           allowPrivilegeEscalation: false
           runAsUser: 1001
