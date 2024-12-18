@@ -2,15 +2,15 @@
 
 ## Pre-requisites
 
-1. Generate a random hex key and paste it in the SECRET_KEY variable in the .env file:
-```bash
-openssl rand -hex 32
-```
-
-2. Create a .env file with the variables required: 
+1. Create a .env file with the variables required: 
 - [https://github.com/outline/outline/blob/main/.env.sample](https://github.com/outline/outline/blob/main/.env.sample)
 ```bash
 cp .env.sample .env
+```
+
+2. Generate a random hex key and paste it in the SECRET_KEY variable in the .env file:
+```bash
+openssl rand -hex 32
 ```
 
 ## Installation
