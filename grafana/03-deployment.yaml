@@ -13,11 +13,17 @@ spec:
       labels:
         app: grafana
     spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
       containers:
       - name: grafana
-        image: grafana/grafana-enterprise:11.0.0
+        image: grafana/grafana:11.5.2
         ports:
         - containerPort: 3000
+          name: grafana-http
+          protocol: TCP
         volumeMounts:
         - name: grafana-storage
           mountPath: /var/lib/grafana
