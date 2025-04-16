@@ -2,6 +2,7 @@ certs
 *.key
 *.crt
 *.cert
+*.ca
 .env
 
 # helm
