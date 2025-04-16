@@ -24,7 +24,7 @@ spec:
               mountPath: /data
       containers:
         - name: n8n
-          image: n8nio/n8n:1.64.1
+          image: n8nio/n8n:1.88.0
           ports:
             - containerPort: 5678
           resources:

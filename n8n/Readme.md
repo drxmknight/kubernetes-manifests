@@ -18,10 +18,10 @@ export $(grep -v '^#' .env | xargs)
 
 2. Validate the configuration:
 ```bash
-kubectl kustomize . | envsubst
+kubectl kustomize . | envsubst > compiled.yaml
 ```
 
 3. Deploy the resources:
 ```bash
-kubectl kustomize . | envsubst | kubectl apply -f -
+kubectl apply -f compiled.yaml
 ```

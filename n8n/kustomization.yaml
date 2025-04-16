@@ -15,7 +15,5 @@ secretGenerator:
     envs:
       - .env
 
-configMapGenerator:
-  - name: n8n-config
-    literals:
-      - WEBHOOK_URL=https://n8n.${N8N_DOMAIN}
+generatorOptions:
+  disableNameSuffixHash: true
