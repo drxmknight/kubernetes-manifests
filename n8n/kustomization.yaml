@@ -1,0 +1,21 @@
+namespace: ${NAMESPACE}
+
+resources:
+  - 01-namespace.yaml
+  - 02-pvc.yaml
+  - 03-configmap.yaml
+  - 04-deploy-postgres.yaml
+  - 05-deploy-n8n.yaml
+  - 06-services.yaml
+  - 07-ingress.yaml
+
+secretGenerator:
+  - name: postgres-secret
+    namespace: ${NAMESPACE}
+    envs:
+      - .env
+
+configMapGenerator:
+  - name: n8n-config
+    literals:
+      - WEBHOOK_URL=https://n8n.${N8N_DOMAIN}

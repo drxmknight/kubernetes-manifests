@@ -9,21 +9,19 @@ Kubernetes manifests to deploy n8n, a workflow automation tool.
 mv .env.sample .env
 ```
 
+# Installation 
 
-## Installation
-
-1. First, create a namespace and the secret from the .env file:
+1. Set up the environment variables in the `.env` file and load them:
 ```bash
-kubectl create namespace n8n
-kubectl create secret generic postgres-secret --from-env-file=.env --namespace=n8n
+export $(grep -v '^#' .env | xargs)
 ```
 
-2. Deploy the resources:
+2. Validate the configuration:
 ```bash
-kubectl apply -f .
+kubectl kustomize . | envsubst
 ```
 
-3. To uninstall, delete the resources:
+3. Deploy the resources:
 ```bash
-kubectl delete -f 01-namespace.yaml
+kubectl kustomize . | envsubst | kubectl apply -f -
 ```

@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: n8n.str.local
+  - host: n8n.${N8N_DOMAIN}
     http:
       paths:
       - path: /
@@ -21,5 +21,5 @@ spec:
               number: 5678
   tls:
   - hosts:
-    - n8n.str.local
-    secretName: str-local-cert
+    - n8n.${N8N_DOMAIN}
+    secretName: ${CERTIFICATE_SECRET_NAME}
