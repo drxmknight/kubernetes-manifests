@@ -5,6 +5,8 @@ certs
 *.ca
 .env
 
+# kubernetes
+compiled.yaml
 # helm
 values.yaml
 labs
