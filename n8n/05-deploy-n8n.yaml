@@ -29,10 +29,12 @@ spec:
             - containerPort: 5678
           resources:
             requests:
-              memory: "250Mi"
+              memory: "200Mi"
+              cpu: "25m"
             limits:
               # High memory needed to handle large files
               memory: "4Gi"
+              cpu: "2"
           command:
             - /bin/sh
           args:
