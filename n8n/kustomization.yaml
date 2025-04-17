@@ -1,4 +1,4 @@
-namespace: ${NAMESPACE}
+namespace: ${N8N_NAMESPACE}
 
 resources:
   - 01-namespace.yaml
@@ -11,7 +11,7 @@ resources:
 
 secretGenerator:
   - name: postgres-secret
-    namespace: ${NAMESPACE}
+    namespace: ${N8N_NAMESPACE}
     envs:
       - .env
 

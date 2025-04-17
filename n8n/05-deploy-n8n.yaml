@@ -62,7 +62,7 @@ spec:
             - name: N8N_PORT
               value: "5678"
             - name: WEBHOOK_URL
-              value: https://n8n.${DOMAIN}
+              value: https://${N8N_DOMAIN}
             # - name: N8N_PAYLOAD_SIZE_MAX
             #   value: "1024"
             # Needs to handle large files
