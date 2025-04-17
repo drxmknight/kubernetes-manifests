@@ -4,6 +4,8 @@ certs
 *.cert
 *.ca
 .env
+.env*
+!.env.sample
 
 # kubernetes
 compiled.yaml
