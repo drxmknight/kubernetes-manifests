@@ -29,9 +29,10 @@ kubectl --namespace langfuse create secret generic langfuse \
 
 3. Install Langfuse using Helm:
 ```bash
-helm upgrade langfuse langfuse/langfuse --install \
+helm upgrade langfuse langfuse/langfuse --install --namespace langfuse --create-namespace  \
+--values values.yaml \
 --set langfuse.ingress.enabled=true \
---set langfuse.ingress.hosts[0].host=langfuse.str.local \
+--set langfuse.ingress.hosts[0].host=langfuse.ehlab.local \
 --set langfuse.ingress.hosts[0].paths[0].path=/ \
 --set langfuse.ingress.hosts[0].paths[0].pathType=Prefix \
 --set langfuse.ingress.className=nginx \
