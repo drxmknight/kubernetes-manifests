@@ -1,0 +1,10 @@
+namespace: ${NAMESPACE}
+
+resources:
+  - 01-namespace.yaml
+  - 02-deployment.yaml
+  - 03-service.yaml
+  - 04-ingress.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true

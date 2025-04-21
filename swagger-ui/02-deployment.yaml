@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: swagger-editor
+  name: swagger-editor
+  namespace: swagger-editor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: swagger-editor
+  template:
+    metadata:
+      labels:
+        service: swagger-editor
+    spec:
+      containers:
+        - image: docker.swagger.io/swaggerapi/swagger-editor
+          name: swagger-editor
+          resources:
+            requests:
+              cpu: "25m"
+              memory: 64Mi
+            limits:
+              cpu: "2"
+              memory: 1Gi
+          ports:
+            - containerPort: 8080
+              name: swagger-editor
+      restartPolicy: Always
