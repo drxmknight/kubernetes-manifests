@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/proxy-body-size: "100M"
 spec:
-  ingressClassName: swagger-editor
+  ingressClassName: nginx
   rules:
   - host: ${DOMAIN}
     http:
@@ -16,9 +16,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: n8n
+            name: swagger-editor
             port:
-              number: 5678
+              number: 8080
   tls:
   - hosts:
     - ${DOMAIN}
