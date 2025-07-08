@@ -18,9 +18,10 @@ kubectl create namespace langfuse
 2. Create a Kubernetes secret for the Langfuse credentials:
 ```bash
 LANGFUSE_SECRET=$(openssl rand -base64 32 | tr -dc 'a-zA-Z')
+LANGFUSE_ENCRYPTION_KEY=$(openssl rand -hex 32)
 kubectl --namespace langfuse create secret generic langfuse \
 --from-literal=salt=$LANGFUSE_SECRET \
---from-literal=encryption-key=$LANGFUSE_SECRET \
+--from-literal=encryption-key=$LANGFUSE_ENCRYPTION_KEY \
 --from-literal=nextauth-secret=$LANGFUSE_SECRET \
 --from-literal=postgres-password=$LANGFUSE_SECRET \
 --from-literal=redis-password=$LANGFUSE_SECRET \
@@ -32,9 +33,8 @@ kubectl --namespace langfuse create secret generic langfuse \
 ```bash
 helm upgrade langfuse langfuse/langfuse --install --namespace langfuse --create-namespace  \
 --values values.yaml \
---set langfuse.additionalEnv[0].name=LANGFUSE_ENCRYPTION_KEY \
---set langfuse.additionalEnv[0].valueFrom.secretKeyRef.name=langfuse \
---set langfuse.additionalEnv[0].valueFrom.secretKeyRef.key=encryption-key \
+--set langfuse.encryptionKey.secretKeyRef.name=langfuse \
+--set langfuse.encryptionKey.secretKeyRef.key=encryption-key \
 --set langfuse.ingress.enabled=true \
 --set langfuse.ingress.hosts[0].host=langfuse.ehlab.local \
 --set langfuse.ingress.hosts[0].paths[0].path=/ \
