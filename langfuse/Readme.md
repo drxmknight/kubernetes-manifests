@@ -24,13 +24,17 @@ kubectl --namespace langfuse create secret generic langfuse \
 --from-literal=nextauth-secret=$LANGFUSE_SECRET \
 --from-literal=postgres-password=$LANGFUSE_SECRET \
 --from-literal=redis-password=$LANGFUSE_SECRET \
---from-literal=clickhouse-password=$LANGFUSE_SECRET
+--from-literal=clickhouse-password=$LANGFUSE_SECRET \
+--from-literal=encryption-key=$LANGFUSE_SECRET
 ```
 
 3. Install Langfuse using Helm:
 ```bash
 helm upgrade langfuse langfuse/langfuse --install --namespace langfuse --create-namespace  \
 --values values.yaml \
+--set langfuse.additionalEnv[0].name=LANGFUSE_ENCRYPTION_KEY \
+--set langfuse.additionalEnv[0].valueFrom.secretKeyRef.name=langfuse \
+--set langfuse.additionalEnv[0].valueFrom.secretKeyRef.key=encryption-key \
 --set langfuse.ingress.enabled=true \
 --set langfuse.ingress.hosts[0].host=langfuse.ehlab.local \
 --set langfuse.ingress.hosts[0].paths[0].path=/ \
